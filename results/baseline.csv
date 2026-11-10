@@ -1,0 +1,8 @@
+method,slice_size,overlap,num_detections,num_tiles,time_sec
+full_image,,,12,1,4.9365
+sliced,320.0,0.1,32,8,2.8634
+sliced,320.0,0.2,34,12,3.9188
+sliced,512.0,0.1,22,6,2.1397
+sliced,512.0,0.2,22,6,2.064
+sliced,640.0,0.1,19,2,1.0515
+sliced,640.0,0.2,19,2,0.865

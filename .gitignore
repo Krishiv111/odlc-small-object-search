@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+yolov8n.pt
+data/
+results/vis/
+.DS_Store
