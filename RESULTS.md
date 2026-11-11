@@ -1,4 +1,4 @@
-# Week 1 results: tiling vs. full-image baseline
+# Weekly results: tiling vs. full-image baseline
 
 This is the baseline the RL stretch goal will eventually have to beat. There's
 no RL here yet — this is just establishing "how much does checking every
