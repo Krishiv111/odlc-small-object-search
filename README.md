@@ -45,6 +45,21 @@ First working version of the RL stretch goal: a small DQN picks a budget of
 tiles to check instead of checking all of them. Results and the "what this
 does/doesn't prove yet" caveats are in `RESULTS.md`.
 
+## RL generalization check (train on 2 images, test on a held-out 3rd)
+
+```bash
+python src/get_multi_images.py   # pulls 2 more stand-in images into data/multi/
+python src/build_oracle_multi.py --out results/tile_oracle_multi.csv
+python src/train_rl_generalization.py --oracle results/tile_oracle_multi.csv \
+    --held-out marina_boats --budget 5 --episodes 500
+python src/plot_generalization.py
+```
+
+Tests whether the agent learned a real "what to look for" rule or just
+memorized one photo, by training on 2 images and evaluating on a 3rd it
+never saw. Results (it beats random but doesn't fully match oracle-best on
+the unseen image) are in `RESULTS.md`.
+
 ## Week 1 results (stand-in image)
 
 Ran on a single test aerial photo (SAHI's tutorial image, standing in for real

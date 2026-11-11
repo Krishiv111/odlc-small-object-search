@@ -1,0 +1,4 @@
+image_id,status,trained_agent,random_avg,oracle_best,full_exhaustive
+desert_convoy,seen (trained on),8.0,2.96,8.0,8.0
+marina_boats,HELD OUT (never trained on),4.0,3.02,7.0,7.0
+vehicles_lot,seen (trained on),41.0,18.2,41.0,42.0

@@ -95,6 +95,47 @@ works end to end. It's not evidence yet that the agent can do this on a tile
 grid it hasn't seen. That needs real image features in the state and
 training across many images -- see next steps below.
 
+## Second RL experiment: does it generalize to an unseen image?
+
+The first RL experiment only used one image, so there was no way to tell if
+the agent learned anything real or just memorized tile positions for that
+one photo. This experiment fixes both gaps it called out: tiles now carry
+real visual features (average color + an edge-density score, not just a
+visited/not-visited flag), and there are three different real images --
+a parking lot (`vehicles_lot`), a desert jeep convoy (`desert_convoy`), and
+an aerial marina full of boats (`marina_boats`). All three get resized to
+the same canvas and cut into the same 12-tile grid so tile 0..11 means the
+same position across images.
+
+The agent trained only on `vehicles_lot` and `desert_convoy`. `marina_boats`
+was never shown during training -- held out specifically to test whether the
+agent learned a transferable rule ("tiles that look like X usually have
+targets") instead of memorizing specific photos. Budget: 5 of 12 tiles.
+
+| image | status | trained agent | random (avg) | oracle best | full exhaustive |
+|---|---|---|---|---|---|
+| vehicles_lot | trained on | 41 | 18.2 | 41 | 42 |
+| desert_convoy | trained on | 8 | 3.0 | 8 | 8 |
+| marina_boats | **held out, never seen** | **4** | 3.0 | 7 | 7 |
+
+![Generalization comparison](results/plots/rl_generalization.png)
+
+**What this shows:** on the two images it trained on, the agent matches the
+oracle best almost exactly, same as before. On the held-out marina image it
+has genuinely never seen, it still beats random guessing (4 vs 3.0) but
+falls short of the oracle best (4 vs 7). That's a real, if modest,
+generalization result: the visual features gave it something to go on, not
+nothing, but it is not yet transferring as well as it performs on images
+it was trained on. That gap (4 vs 7 on the unseen image, vs. 41/41 and 8/8
+on seen ones) is the honest headline number here, and the next experiments
+below are aimed straight at closing it.
+
+**Why the gap is believable, not a bug:** three training/eval images with
+handcrafted color/edge features is a small, simple signal. The marina image
+is also the most visually different of the three (dark water instead of
+dirt/pavement, boats instead of cars), so it's the hardest possible
+held-out case, not a cherry-picked easy one.
+
 ## Experiments still to run
 
 1. **Swap in real images** (team dataset or VisDrone/DOTA) — the current
@@ -108,15 +149,16 @@ training across many images -- see next steps below.
    knee in the curve is, instead of jumping straight from 512 to 320.
 5. **Run on multiple images** and average, so one unusual photo doesn't
    skew the conclusion either way.
-6. **Give the RL agent real image features**, not just a visited-tile mask,
-   so it has something to learn a general rule from (e.g. a small CNN
-   embedding of each tile, or coarse downsampled image patches per tile).
-7. **Train across multiple images** once 6 is done, and test on held-out
-   images the agent never saw, to check whether the policy actually
-   generalizes or just memorizes per-image tile rankings.
-8. **Sweep the tile budget** (2, 4, 6 tiles out of 8+) to map out the
+6. **Train on more than 2 images.** Three images total (2 train, 1 held out)
+   is enough to show a generalization gap exists, not enough to claim it's
+   fixed. Needs a real dataset-sized pass (dozens of images minimum).
+7. **Replace handcrafted color/edge features with a learned CNN embedding**
+   per tile -- handcrafted features cap how subtle a pattern the agent can
+   pick up on; a small trained feature extractor should close more of the
+   seen-vs-held-out gap (41/41 & 8/8 vs. 4/7).
+8. **Sweep the tile budget** (2, 4, 6+ tiles) to map out the
    detections-per-tile-checked curve for the RL policy the same way it's
-   mapped for exhaustive tiling above.
+   mapped for exhaustive tiling above, on both seen and held-out images.
 
 ## Reproduce
 
@@ -126,8 +168,14 @@ python src/get_sample_image.py
 python src/tiled_inference.py --image data/sample.jpg --out results/baseline.csv --save-vis
 python src/make_plots.py
 
-# RL tile-selection experiment
+# RL tile-selection experiment (single image)
 python src/build_oracle.py --image data/sample.jpg --tile-size 320 --out results/tile_oracle.csv
 python src/train_rl.py --oracle results/tile_oracle.csv --budget 4 --episodes 300
 python src/plot_rl.py
+
+# RL generalization experiment (train on 2 images, test on a held-out 3rd)
+python src/build_oracle_multi.py --out results/tile_oracle_multi.csv
+python src/train_rl_generalization.py --oracle results/tile_oracle_multi.csv \
+    --held-out marina_boats --budget 5 --episodes 500
+python src/plot_generalization.py
 ```
