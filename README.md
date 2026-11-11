@@ -26,6 +26,13 @@ python src/tiled_inference.py --image data/sample.jpg --out results/baseline.csv
 `--save-vis` writes annotated images to `results/vis/` so you can eyeball what
 each tiling setting actually catches.
 
+```bash
+python src/make_plots.py       # turns results/baseline.csv into results/plots/
+```
+
+See `RESULTS.md` for the writeup: what the numbers show, caveats, and the
+list of experiments still needed before this is report-ready.
+
 ## Week 1 results (stand-in image)
 
 Ran on a single test aerial photo (SAHI's tutorial image, standing in for real
