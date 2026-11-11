@@ -60,6 +60,41 @@ vs "check everything."
   twice; nothing here merges those with NMS yet, so detection counts may be
   somewhat inflated for the overlapping configs.
 
+## First RL experiment: budgeted tile selection
+
+This is the first actual RL code, not just baseline tiling. Setup: split the
+same test image into a fixed 8-tile grid (no overlap, 320px tiles), give the
+agent a budget of 4 tiles (half the grid), and train a small DQN to pick
+which 4 tiles to check to find the most detections. Reward per tile comes
+from a precomputed oracle (ran the detector on every tile once up front, see
+`build_oracle.py`) so training doesn't need to re-run YOLO every step.
+
+| policy | tiles checked | detections found |
+|---|---|---|
+| trained DQN agent | 4 | 29 |
+| random tile picks (avg of 50 runs) | 4 | 16.9 |
+| oracle best possible (4-tile budget) | 4 | 30 |
+| full exhaustive tiling | 8 | 30 |
+
+![RL training curve](results/plots/rl_training_curve.png)
+
+![Policy comparison](results/plots/rl_policy_comparison.png)
+
+**What this shows:** with half the tile budget, the trained agent gets 29 of
+30 possible detections, basically matching the oracle-best policy and far
+beating random picking (16.9). Checking all 8 tiles only gets 1 more
+detection (30) than the agent gets with half the tiles.
+
+**What this does NOT show yet, and why:** this is one image, so the agent is
+memorizing "tiles 1, 2, 5, 6 are the good ones for this specific photo," not
+learning a transferable rule like "look where there's road/parking texture."
+The state the agent sees is just a visited-tile mask, no actual image
+content, so there's nothing for it to generalize from. This proves the RL
+loop (env, reward, replay buffer, DQN training, target network) actually
+works end to end. It's not evidence yet that the agent can do this on a tile
+grid it hasn't seen. That needs real image features in the state and
+training across many images -- see next steps below.
+
 ## Experiments still to run
 
 1. **Swap in real images** (team dataset or VisDrone/DOTA) — the current
@@ -73,9 +108,15 @@ vs "check everything."
    knee in the curve is, instead of jumping straight from 512 to 320.
 5. **Run on multiple images** and average, so one unusual photo doesn't
    skew the conclusion either way.
-6. **Build the RL baseline comparison** once the above is solid: same
-   image set, same detector, agent picks a budget of tiles (e.g. 4) vs.
-   random 4 tiles vs. all tiles, compare recall per tile checked.
+6. **Give the RL agent real image features**, not just a visited-tile mask,
+   so it has something to learn a general rule from (e.g. a small CNN
+   embedding of each tile, or coarse downsampled image patches per tile).
+7. **Train across multiple images** once 6 is done, and test on held-out
+   images the agent never saw, to check whether the policy actually
+   generalizes or just memorizes per-image tile rankings.
+8. **Sweep the tile budget** (2, 4, 6 tiles out of 8+) to map out the
+   detections-per-tile-checked curve for the RL policy the same way it's
+   mapped for exhaustive tiling above.
 
 ## Reproduce
 
@@ -84,4 +125,9 @@ source .venv/bin/activate
 python src/get_sample_image.py
 python src/tiled_inference.py --image data/sample.jpg --out results/baseline.csv --save-vis
 python src/make_plots.py
+
+# RL tile-selection experiment
+python src/build_oracle.py --image data/sample.jpg --tile-size 320 --out results/tile_oracle.csv
+python src/train_rl.py --oracle results/tile_oracle.csv --budget 4 --episodes 300
+python src/plot_rl.py
 ```

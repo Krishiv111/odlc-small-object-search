@@ -33,6 +33,18 @@ python src/make_plots.py       # turns results/baseline.csv into results/plots/
 See `RESULTS.md` for the writeup: what the numbers show, caveats, and the
 list of experiments still needed before this is report-ready.
 
+## RL tile-selection (first version)
+
+```bash
+python src/build_oracle.py --image data/sample.jpg --tile-size 320 --out results/tile_oracle.csv
+python src/train_rl.py --oracle results/tile_oracle.csv --budget 4 --episodes 300
+python src/plot_rl.py
+```
+
+First working version of the RL stretch goal: a small DQN picks a budget of
+tiles to check instead of checking all of them. Results and the "what this
+does/doesn't prove yet" caveats are in `RESULTS.md`.
+
 ## Week 1 results (stand-in image)
 
 Ran on a single test aerial photo (SAHI's tutorial image, standing in for real
