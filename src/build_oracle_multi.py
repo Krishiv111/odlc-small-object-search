@@ -29,12 +29,25 @@ PLACEHOLDER_IMAGES = {
 # Real frames pulled from Forge's own flight_video.mp4 (clean, no baked-in
 # overlay), all from one flight pass but at different points in the
 # recording, so target position/background varies between them.
-REAL_IMAGES = {
+REAL_BASE_IMAGES = {
     "frame_multi": "data/real/tent_mannequin_multi.jpg",
     "frame_mannequin_tent": "data/real/mannequin_tent.jpg",
     "frame_single_tent": "data/real/single_tent.jpg",
     "frame_tent_closeup": "data/real/tent_closeup.jpg",
 }
+
+# Synthetic brightness/rotation/flip variants of each base frame (see
+# augment_frames.py). These only ever appear on the TRAINING side of a
+# generalization split -- the held-out scene's base id and all its variants
+# are excluded together (see train_rl_generalization.py --held-out-base), so
+# augmenting doesn't leak the held-out scene's content into training.
+REAL_AUGMENTED_IMAGES = {
+    f"{base_id}_{variant}": f"data/real/augmented/{base_id}_{variant}.jpg"
+    for base_id in REAL_BASE_IMAGES
+    for variant in ["bright", "dark", "rot", "flip"]
+}
+
+REAL_IMAGES = {**REAL_BASE_IMAGES, **REAL_AUGMENTED_IMAGES}
 
 
 def main():

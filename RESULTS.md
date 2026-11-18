@@ -73,35 +73,54 @@ checking 8% of the grid. Random guessing almost never finds them (0.2 out of
 demonstration of the RL idea than the placeholder version: on real data, the
 "find the needle" problem is real, and the agent solves it.
 
-### Real generalization test: train on 3 real frames, test on 1 unseen
+### Real generalization test, take 2: synthetic variety + leave-one-scene-out
 
-| image | status | trained agent | random (avg) | oracle best | full exhaustive |
-|---|---|---|---|---|---|
-| frame_mannequin_tent | trained on | 2 | 0.2 | 2 | 2 |
-| frame_multi | trained on | 3 | 0.2 | 3 | 3 |
-| frame_single_tent | trained on | 2 | 0.2 | 2 | 2 |
-| frame_tent_closeup | **held out, never seen** | **0** | 0.4 | 2 | 2 |
+The first version of this test (single train/test split on the 4 raw
+frames) only proved the handcrafted features were too coarse — it didn't
+actually prove the opposite would fail with more data, because 3 training
+frames and 1 test frame is too small a sample to trust either way (see the
+superseded single-split result further down, kept for history). Two fixes,
+both synthetic since we don't have more real flights yet:
 
-![Real generalization comparison](results/plots/rl_generalization_real.png)
+1. **4 synthetic variants per real frame** (`src/augment_frames.py`):
+   brightness up, brightness down, a 6° rotation, and a horizontal flip of
+   each of the 4 base frames — 16 synthetic frames on top of the 4 real
+   ones, 20 total. These only ever sit on the *training* side of a split.
+2. **Leave-one-scene-out, 4 independent runs** (`src/train_rl_generalization.py
+   --held-out-base`): each run holds out one whole real scene *and all 4 of
+   its synthetic variants* — the agent never sees that scene in any form —
+   and trains on the other 3 scenes plus their 12 synthetic variants (15
+   training frames). This runs once per scene so held-out performance isn't
+   one lucky/unlucky frame; it's 4 separate held-out tests, 20 held-out
+   frames in total across the 4 runs.
 
-**Honest result: it didn't generalize at all here, and that's informative,
-not just disappointing.** Perfect on all 3 seen frames, same as the
-single-image result. On the held-out frame it got 0 — actually worse than
-random (0.4). Here's why, and it's a real, useful finding: the real targets
-are tiny relative to a 320px tile (a few dozen pixels in a 100,000+ pixel
-tile), so the handcrafted features we're using (average tile color, edge
-density) barely move when a target is present vs. absent at this scale —
-there's effectively no usable signal in those features for this problem.
-The agent trained on 3 frames most likely just memorized "tile 11 is
-usually good" (true for 2 of the 3 training frames) rather than learning a
-real visual rule, and had nothing to fall back on when the target moved to
-a new tile in the held-out frame.
+| held-out scene | agent (summed, scene + 4 variants) | oracle best | random (avg, summed) |
+|---|---|---|---|
+| frame_multi | 5 | 10 | 2.0 |
+| frame_mannequin_tent | 8 | 9 | 1.8 |
+| frame_single_tent | 1 | 5 | 1.0 |
+| frame_tent_closeup | 2 | 10 | 2.5 |
+| **total** | **16** | **34** | **7.2** |
 
-This sharpens next-step #7 (CNN features instead of handcrafted ones) from
-a nice-to-have into a hard requirement for this problem specifically —
-average color/edge stats are too coarse to represent a target this small
-relative to its tile. A learned embedding that can actually represent "is
-there a small dark/blue blob here" is very likely necessary, not optional.
+**47% of oracle-best, vs. random's 21%.** That's the headline: the trained
+agent is now more than double random on truly unseen scenes, averaged
+across 4 independent held-out tests — a real, if partial, generalization
+signal, which the original single-split test (0/2) didn't have enough data
+to detect either way.
+
+![Leave-one-scene-out generalization](results/plots_real/rl_generalization_loso.png)
+
+**But it's uneven, and that's the honest part.** `frame_mannequin_tent` held
+out at 89% of oracle — close to perfect. `frame_single_tent` held out at
+20% of oracle — barely better than random. Same features, same agent
+architecture, wildly different held-out performance depending on which
+scene gets left out. That's consistent with the original diagnosis: color/
+edge features pick up *some* signal (better than random, so not nothing)
+but not enough to transfer reliably scene-to-scene — exactly what we'd
+expect if the real bottleneck is feature quality, not data quantity. More
+synthetic variety raised the average from "0, can't tell" to "47%, real but
+inconsistent"; it didn't fix the underlying feature problem, which still
+needs CNN-based tile features (next-step #2 below) to close the gap.
 
 ### What to tell the team tonight, honestly
 
@@ -109,20 +128,27 @@ there a small dark/blue blob here" is very likely necessary, not optional.
   confirmed, not assumed
 - The RL mechanism works great in the "find 2 needles in 24 haystacks"
   setting real data actually looks like (perfect score, 8% of tiles)
-- It does not yet generalize to an unseen frame, and we know specifically
-  why (features too coarse for target size), not just "it needs more data"
+- It generalizes to unseen scenes *partially* — 47% of oracle-best vs.
+  random's 21%, averaged over 4 independent held-out tests — better than our
+  first look suggested, but inconsistent scene-to-scene, and we know why
+  (handcrafted features carry some signal but not enough)
 - The tiling-helps-accuracy story is weaker on real data than it looked on
   the placeholder data, because the real model is already good; the
   stronger pitch is still the speed/compute one
 
 ### Real-data experiments still to run
 
-1. **More real frames, more variety.** All 4 frames here are from one short
-   flight pass over one field. Need frames from different flights/fields/
-   lighting for both a fair baseline comparison and a real generalization
-   test.
-2. **CNN tile features instead of handcrafted color/edge stats** — this is
-   now a confirmed requirement, not a guess, given the 0/2 held-out result.
+1. **More real frames, more variety — from actual new flights, not just
+   synthetic augmentation of the same one.** The leave-one-scene-out result
+   above used synthetic brightness/rotation/flip variants to stretch 4 real
+   frames into a real test, but all 20 frames still come from one flight
+   pass over one field. Real frames from different flights/fields/lighting
+   would be a stronger test than any amount of synthetic variety on the same
+   source footage.
+2. **CNN tile features instead of handcrafted color/edge stats** — now a
+   confirmed requirement, not a guess: performance is well above random
+   (so there's *some* signal) but too inconsistent scene-to-scene to trust
+   (so the signal is too weak). A learned embedding should close that gap.
 3. **NMS merging across tile boundaries**, now with real duplicate evidence
    (the 512px/640px configs found 4 vs. full image's 3 — likely one
    duplicate, not a new target).
@@ -154,14 +180,17 @@ python src/train_rl.py --oracle results/tile_oracle_real.csv --budget 2 --episod
 python src/plot_rl.py --training results/rl_training_real.csv \
     --summary results/rl_training_real_summary.csv --out results/plots_real
 
-# generalization (train on 3 real frames, test on 1 held out)
+# generalization: synthetic variety + leave-one-scene-out (current)
+python src/augment_frames.py
 python src/build_oracle_multi.py --dataset real --model models/forge_yolo11n_v19_best.pt \
     --out results/tile_oracle_multi_real.csv
-python src/train_rl_generalization.py --oracle results/tile_oracle_multi_real.csv \
-    --held-out frame_tent_closeup --budget 3 --episodes 800 \
-    --out results/rl_generalization_summary_real.csv
-python src/plot_generalization.py --summary results/rl_generalization_summary_real.csv \
-    --out-name rl_generalization_real.png
+for base in frame_multi frame_mannequin_tent frame_single_tent frame_tent_closeup; do
+    python src/train_rl_generalization.py --oracle results/tile_oracle_multi_real.csv \
+        --held-out-base $base --budget 5 --episodes 500 \
+        --out results/rl_generalization_loso_${base}.csv
+done
+python src/aggregate_loso.py
+python src/plot_loso.py
 ```
 
 ---

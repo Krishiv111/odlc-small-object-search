@@ -48,15 +48,33 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--oracle", default="results/tile_oracle_multi.csv")
     parser.add_argument("--held-out", default="marina_boats")
+    parser.add_argument(
+        "--held-out-base",
+        default=None,
+        help="Hold out a whole scene group: this id plus every "
+        "<id>_bright/_dark/_rot/_flip augmented variant of it. Takes "
+        "priority over --held-out when set.",
+    )
     parser.add_argument("--budget", type=int, default=5)
     parser.add_argument("--episodes", type=int, default=500)
     parser.add_argument("--out", default="results/rl_generalization_summary.csv")
     args = parser.parse_args()
 
     env = MultiTileSearchEnv(args.oracle, budget=args.budget)
-    train_image_ids = [i for i in env.image_ids if i != args.held_out]
-    print(f"Training images: {train_image_ids}")
-    print(f"Held-out (never trained on): {args.held_out}")
+
+    if args.held_out_base:
+        held_out_group = {args.held_out_base} | {
+            f"{args.held_out_base}_{suffix}" for suffix in ["bright", "dark", "rot", "flip"]
+        }
+        train_image_ids = [i for i in env.image_ids if i not in held_out_group]
+        held_out_display = args.held_out_base
+    else:
+        held_out_group = {args.held_out}
+        train_image_ids = [i for i in env.image_ids if i != args.held_out]
+        held_out_display = args.held_out
+
+    print(f"Training images ({len(train_image_ids)}): {train_image_ids}")
+    print(f"Held-out group (never trained on, any form): {sorted(held_out_group)}")
 
     agent = DQNAgent(state_dim=env.state_dim, action_dim=env.action_dim)
     epsilon, epsilon_end, epsilon_decay = 1.0, 0.05, 0.99
@@ -69,7 +87,7 @@ def main():
 
     rows = []
     for image_id in env.image_ids:
-        seen = "seen (trained on)" if image_id != args.held_out else "HELD OUT (never trained on)"
+        seen = "seen (trained on)" if image_id not in held_out_group else "HELD OUT (never trained on)"
         agent_reward = run_episode(env, agent, epsilon=0.0, train=False, image_id=image_id)
         random_rewards = [random_policy_reward(env, image_id) for _ in range(50)]
         random_avg = float(np.mean(random_rewards))
