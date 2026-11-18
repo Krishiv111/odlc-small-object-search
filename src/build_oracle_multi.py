@@ -13,12 +13,27 @@ import pandas as pd
 from sahi import AutoDetectionModel
 from sahi.predict import get_prediction
 
-from multi_image_grid import build_grid, crop, load_resized, tile_features
+from multi_image_grid import tile_features
+from multi_image_grid import build_grid as build_grid_resized
+from multi_image_grid import crop as crop_resized
+from multi_image_grid import load_resized
+from tile_grid import build_grid as build_grid_native
+from tile_grid import crop as crop_native
 
-IMAGES = {
+PLACEHOLDER_IMAGES = {
     "vehicles_lot": "data/sample.jpg",
     "desert_convoy": "data/multi/terrain2.png",
     "marina_boats": "data/multi/obb_test_image.png",
+}
+
+# Real frames pulled from Forge's own flight_video.mp4 (clean, no baked-in
+# overlay), all from one flight pass but at different points in the
+# recording, so target position/background varies between them.
+REAL_IMAGES = {
+    "frame_multi": "data/real/tent_mannequin_multi.jpg",
+    "frame_mannequin_tent": "data/real/mannequin_tent.jpg",
+    "frame_single_tent": "data/real/single_tent.jpg",
+    "frame_tent_closeup": "data/real/tent_closeup.jpg",
 }
 
 
@@ -26,24 +41,35 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--confidence", type=float, default=0.25)
     parser.add_argument("--out", default="results/tile_oracle_multi.csv")
+    parser.add_argument("--model", default="yolov8n.pt")
+    parser.add_argument("--dataset", choices=["placeholder", "real"], default="placeholder")
     args = parser.parse_args()
+    IMAGES = REAL_IMAGES if args.dataset == "real" else PLACEHOLDER_IMAGES
 
     model = AutoDetectionModel.from_pretrained(
         model_type="ultralytics",
-        model_path="yolov8n.pt",
+        model_path=args.model,
         confidence_threshold=args.confidence,
         device="cpu",
     )
 
-    tiles = build_grid()
     rows = []
     tmp_path = Path("data/_tile_tmp.jpg")
 
     for image_id, path in IMAGES.items():
-        img = load_resized(path)
         print(f"\n{image_id} ({path}):")
+        if args.dataset == "real":
+            # Real frames all share native resolution (1920x1080), so grid
+            # natively instead of resizing -- resizing shrinks already-tiny
+            # targets below what the model can reliably catch (see RESULTS.md).
+            tiles = build_grid_native(path, tile_size=320)
+            img = None
+        else:
+            tiles = build_grid_resized()
+            img = load_resized(path)
+
         for tile in tiles:
-            tile_img = crop(img, tile)
+            tile_img = crop_native(path, tile) if args.dataset == "real" else crop_resized(img, tile)
             cv2.imwrite(str(tmp_path), tile_img)
             result = get_prediction(str(tmp_path), model)
             n = len(result.object_prediction_list)

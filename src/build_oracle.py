@@ -26,11 +26,12 @@ def main():
     parser.add_argument("--tile-size", type=int, default=320)
     parser.add_argument("--confidence", type=float, default=0.25)
     parser.add_argument("--out", default="results/tile_oracle.csv")
+    parser.add_argument("--model", default="yolov8n.pt")
     args = parser.parse_args()
 
     model = AutoDetectionModel.from_pretrained(
         model_type="ultralytics",
-        model_path="yolov8n.pt",
+        model_path=args.model,
         confidence_threshold=args.confidence,
         device="cpu",
     )

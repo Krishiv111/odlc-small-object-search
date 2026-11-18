@@ -1,0 +1,5 @@
+image_id,status,trained_agent,random_avg,oracle_best,full_exhaustive
+frame_mannequin_tent,seen (trained on),2.0,0.24,2.0,2.0
+frame_multi,seen (trained on),3.0,0.24,3.0,3.0
+frame_single_tent,seen (trained on),2.0,0.2,2.0,2.0
+frame_tent_closeup,HELD OUT (never trained on),0.0,0.36,2.0,2.0

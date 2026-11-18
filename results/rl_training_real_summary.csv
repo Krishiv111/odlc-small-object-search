@@ -1,0 +1,5 @@
+policy,tiles_checked,detections
+trained_dqn,2,3.0
+random,2,0.16
+oracle_best,2,3.0
+full_exhaustive,24,3.0

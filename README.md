@@ -8,6 +8,13 @@ RL adaptive search (learning *where* to look instead of checking every tile)
 is the stretch goal once this baseline and the real team dataset are in place
 -- see the project one-pager for the full plan.
 
+**We now have real data.** `models/forge_yolo11n_v19_best.pt` is Forge's own
+trained detector (classes: `tent`, `mannequin`), and `data/real/*.jpg` are
+clean frames pulled from Forge's own flight footage. See the "Real mission
+data" section at the top of `RESULTS.md` for the current results -- the
+sections below using `data/sample.jpg` and other stand-ins are from before
+we had real data, kept for history, not the current story.
+
 ## Setup
 
 ```bash

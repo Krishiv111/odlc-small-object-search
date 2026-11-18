@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--summary", default="results/rl_generalization_summary.csv")
     parser.add_argument("--out", default="results/plots")
+    parser.add_argument("--out-name", default="rl_generalization.png")
     args = parser.parse_args()
 
     out_dir = Path(args.out)
@@ -43,10 +44,10 @@ def main():
     ax.legend()
     ax.grid(alpha=0.3, axis="y")
     fig.tight_layout()
-    fig.savefig(out_dir / "rl_generalization.png", dpi=150)
+    fig.savefig(out_dir / args.out_name, dpi=150)
     plt.close(fig)
 
-    print(f"Wrote generalization plot to {out_dir}/rl_generalization.png")
+    print(f"Wrote generalization plot to {out_dir}/{args.out_name}")
 
 
 if __name__ == "__main__":

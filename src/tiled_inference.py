@@ -18,10 +18,10 @@ from sahi.predict import get_prediction, get_sliced_prediction
 from sahi.utils.cv import visualize_object_predictions
 
 
-def build_model(confidence_threshold: float = 0.25, device: str = "cpu"):
+def build_model(confidence_threshold: float = 0.25, device: str = "cpu", model_path: str = "yolov8n.pt"):
     return AutoDetectionModel.from_pretrained(
         model_type="ultralytics",
-        model_path="yolov8n.pt",
+        model_path=model_path,
         confidence_threshold=confidence_threshold,
         device=device,
     )
@@ -79,6 +79,7 @@ def main():
     parser.add_argument("--overlaps", default="0.1,0.2")
     parser.add_argument("--confidence", type=float, default=0.25)
     parser.add_argument("--save-vis", action="store_true")
+    parser.add_argument("--model", default="yolov8n.pt")
     args = parser.parse_args()
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
@@ -86,7 +87,7 @@ def main():
     if args.save_vis:
         vis_dir.mkdir(parents=True, exist_ok=True)
 
-    model = build_model(confidence_threshold=args.confidence)
+    model = build_model(confidence_threshold=args.confidence, model_path=args.model)
 
     rows = []
 

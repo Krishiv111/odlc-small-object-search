@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 yolov8n.pt
-data/
+data/*
+!data/real
 results/vis/
 .DS_Store
