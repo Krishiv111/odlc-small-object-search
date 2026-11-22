@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 from dqn_agent import DQNAgent
-from rl_env_multi import MultiTileSearchEnv
+from rl_env_multi import ANOMALY_FEATURE_COLS, RAW_FEATURE_COLS, MultiTileSearchEnv
 
 
 def run_episode(env, agent, epsilon, train, image_id=None, train_image_ids=None):
@@ -58,9 +58,18 @@ def main():
     parser.add_argument("--budget", type=int, default=5)
     parser.add_argument("--episodes", type=int, default=500)
     parser.add_argument("--out", default="results/rl_generalization_summary.csv")
+    parser.add_argument(
+        "--feature-set",
+        choices=["raw", "anomaly"],
+        default="raw",
+        help="raw = mean_r/g/b + edge_density (absolute, color-dependent). "
+        "anomaly = color_anomaly + edge_anomaly (relative to this image's own "
+        "background, no baked-in color assumption).",
+    )
     args = parser.parse_args()
 
-    env = MultiTileSearchEnv(args.oracle, budget=args.budget)
+    feature_cols = ANOMALY_FEATURE_COLS if args.feature_set == "anomaly" else RAW_FEATURE_COLS
+    env = MultiTileSearchEnv(args.oracle, budget=args.budget, feature_cols=feature_cols)
 
     if args.held_out_base:
         held_out_group = {args.held_out_base} | {

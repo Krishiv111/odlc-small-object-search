@@ -1,0 +1,5 @@
+held_out_scene,raw_agent,anomaly_agent,oracle_best
+frame_multi,5.0,5.0,10.0
+frame_mannequin_tent,8.0,6.0,9.0
+frame_single_tent,1.0,1.0,5.0
+frame_tent_closeup,2.0,8.0,10.0

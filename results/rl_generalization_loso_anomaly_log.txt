@@ -1,0 +1,260 @@
+=== holding out frame_multi ===
+Training images (15): ['frame_mannequin_tent', 'frame_mannequin_tent_bright', 'frame_mannequin_tent_dark', 'frame_mannequin_tent_flip', 'frame_mannequin_tent_rot', 'frame_single_tent', 'frame_single_tent_bright', 'frame_single_tent_dark', 'frame_single_tent_flip', 'frame_single_tent_rot', 'frame_tent_closeup', 'frame_tent_closeup_bright', 'frame_tent_closeup_dark', 'frame_tent_closeup_flip', 'frame_tent_closeup_rot']
+Held-out group (never trained on, any form): ['frame_multi', 'frame_multi_bright', 'frame_multi_dark', 'frame_multi_flip', 'frame_multi_rot']
+
+[frame_mannequin_tent] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_mannequin_tent_bright] seen (trained on)
+  trained agent: 3 / oracle best: 3 / random avg: 0.6 / full exhaustive: 3
+
+[frame_mannequin_tent_dark] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.1 / full exhaustive: 1
+
+[frame_mannequin_tent_flip] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_mannequin_tent_rot] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.3 / full exhaustive: 2
+
+[frame_multi] HELD OUT (never trained on)
+  trained agent: 2 / oracle best: 3 / random avg: 0.5 / full exhaustive: 3
+
+[frame_multi_bright] HELD OUT (never trained on)
+  trained agent: 2 / oracle best: 3 / random avg: 0.4 / full exhaustive: 3
+
+[frame_multi_dark] HELD OUT (never trained on)
+  trained agent: 1 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_multi_flip] HELD OUT (never trained on)
+  trained agent: 0 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_multi_rot] HELD OUT (never trained on)
+  trained agent: 0 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent] seen (trained on)
+  trained agent: 1 / oracle best: 2 / random avg: 0.3 / full exhaustive: 2
+
+[frame_single_tent_bright] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent_dark] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent_flip] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.3 / full exhaustive: 1
+
+[frame_single_tent_rot] seen (trained on)
+  trained agent: 0 / oracle best: 0 / random avg: 0.0 / full exhaustive: 0
+
+[frame_tent_closeup] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.2 / full exhaustive: 2
+
+[frame_tent_closeup_bright] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_tent_closeup_dark] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.3 / full exhaustive: 2
+
+[frame_tent_closeup_flip] seen (trained on)
+  trained agent: 2 / oracle best: 3 / random avg: 0.6 / full exhaustive: 3
+
+[frame_tent_closeup_rot] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+Saved generalization comparison to results/rl_generalization_loso_anomaly_frame_multi.csv
+=== holding out frame_mannequin_tent ===
+Training images (15): ['frame_multi', 'frame_multi_bright', 'frame_multi_dark', 'frame_multi_flip', 'frame_multi_rot', 'frame_single_tent', 'frame_single_tent_bright', 'frame_single_tent_dark', 'frame_single_tent_flip', 'frame_single_tent_rot', 'frame_tent_closeup', 'frame_tent_closeup_bright', 'frame_tent_closeup_dark', 'frame_tent_closeup_flip', 'frame_tent_closeup_rot']
+Held-out group (never trained on, any form): ['frame_mannequin_tent', 'frame_mannequin_tent_bright', 'frame_mannequin_tent_dark', 'frame_mannequin_tent_flip', 'frame_mannequin_tent_rot']
+
+[frame_mannequin_tent] HELD OUT (never trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_mannequin_tent_bright] HELD OUT (never trained on)
+  trained agent: 2 / oracle best: 3 / random avg: 0.8 / full exhaustive: 3
+
+[frame_mannequin_tent_dark] HELD OUT (never trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.3 / full exhaustive: 1
+
+[frame_mannequin_tent_flip] HELD OUT (never trained on)
+  trained agent: 0 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_mannequin_tent_rot] HELD OUT (never trained on)
+  trained agent: 1 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_multi] seen (trained on)
+  trained agent: 3 / oracle best: 3 / random avg: 0.5 / full exhaustive: 3
+
+[frame_multi_bright] seen (trained on)
+  trained agent: 3 / oracle best: 3 / random avg: 0.5 / full exhaustive: 3
+
+[frame_multi_dark] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.3 / full exhaustive: 2
+
+[frame_multi_flip] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_multi_rot] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.3 / full exhaustive: 1
+
+[frame_single_tent] seen (trained on)
+  trained agent: 1 / oracle best: 2 / random avg: 0.5 / full exhaustive: 2
+
+[frame_single_tent_bright] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.1 / full exhaustive: 1
+
+[frame_single_tent_dark] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent_flip] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.3 / full exhaustive: 1
+
+[frame_single_tent_rot] seen (trained on)
+  trained agent: 0 / oracle best: 0 / random avg: 0.0 / full exhaustive: 0
+
+[frame_tent_closeup] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.6 / full exhaustive: 2
+
+[frame_tent_closeup_bright] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_tent_closeup_dark] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.6 / full exhaustive: 2
+
+[frame_tent_closeup_flip] seen (trained on)
+  trained agent: 2 / oracle best: 3 / random avg: 0.6 / full exhaustive: 3
+
+[frame_tent_closeup_rot] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.5 / full exhaustive: 2
+
+Saved generalization comparison to results/rl_generalization_loso_anomaly_frame_mannequin_tent.csv
+=== holding out frame_single_tent ===
+Training images (15): ['frame_mannequin_tent', 'frame_mannequin_tent_bright', 'frame_mannequin_tent_dark', 'frame_mannequin_tent_flip', 'frame_mannequin_tent_rot', 'frame_multi', 'frame_multi_bright', 'frame_multi_dark', 'frame_multi_flip', 'frame_multi_rot', 'frame_tent_closeup', 'frame_tent_closeup_bright', 'frame_tent_closeup_dark', 'frame_tent_closeup_flip', 'frame_tent_closeup_rot']
+Held-out group (never trained on, any form): ['frame_single_tent', 'frame_single_tent_bright', 'frame_single_tent_dark', 'frame_single_tent_flip', 'frame_single_tent_rot']
+
+[frame_mannequin_tent] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_mannequin_tent_bright] seen (trained on)
+  trained agent: 2 / oracle best: 3 / random avg: 0.5 / full exhaustive: 3
+
+[frame_mannequin_tent_dark] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_mannequin_tent_flip] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.3 / full exhaustive: 1
+
+[frame_mannequin_tent_rot] seen (trained on)
+  trained agent: 1 / oracle best: 2 / random avg: 0.3 / full exhaustive: 2
+
+[frame_multi] seen (trained on)
+  trained agent: 3 / oracle best: 3 / random avg: 0.6 / full exhaustive: 3
+
+[frame_multi_bright] seen (trained on)
+  trained agent: 3 / oracle best: 3 / random avg: 0.6 / full exhaustive: 3
+
+[frame_multi_dark] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_multi_flip] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_multi_rot] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent] HELD OUT (never trained on)
+  trained agent: 1 / oracle best: 2 / random avg: 0.5 / full exhaustive: 2
+
+[frame_single_tent_bright] HELD OUT (never trained on)
+  trained agent: 0 / oracle best: 1 / random avg: 0.1 / full exhaustive: 1
+
+[frame_single_tent_dark] HELD OUT (never trained on)
+  trained agent: 0 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent_flip] HELD OUT (never trained on)
+  trained agent: 0 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent_rot] HELD OUT (never trained on)
+  trained agent: 0 / oracle best: 0 / random avg: 0.0 / full exhaustive: 0
+
+[frame_tent_closeup] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.5 / full exhaustive: 2
+
+[frame_tent_closeup_bright] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_tent_closeup_dark] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.7 / full exhaustive: 2
+
+[frame_tent_closeup_flip] seen (trained on)
+  trained agent: 3 / oracle best: 3 / random avg: 0.6 / full exhaustive: 3
+
+[frame_tent_closeup_rot] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+Saved generalization comparison to results/rl_generalization_loso_anomaly_frame_single_tent.csv
+=== holding out frame_tent_closeup ===
+Training images (15): ['frame_mannequin_tent', 'frame_mannequin_tent_bright', 'frame_mannequin_tent_dark', 'frame_mannequin_tent_flip', 'frame_mannequin_tent_rot', 'frame_multi', 'frame_multi_bright', 'frame_multi_dark', 'frame_multi_flip', 'frame_multi_rot', 'frame_single_tent', 'frame_single_tent_bright', 'frame_single_tent_dark', 'frame_single_tent_flip', 'frame_single_tent_rot']
+Held-out group (never trained on, any form): ['frame_tent_closeup', 'frame_tent_closeup_bright', 'frame_tent_closeup_dark', 'frame_tent_closeup_flip', 'frame_tent_closeup_rot']
+
+[frame_mannequin_tent] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_mannequin_tent_bright] seen (trained on)
+  trained agent: 2 / oracle best: 3 / random avg: 0.6 / full exhaustive: 3
+
+[frame_mannequin_tent_dark] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.3 / full exhaustive: 1
+
+[frame_mannequin_tent_flip] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_mannequin_tent_rot] seen (trained on)
+  trained agent: 1 / oracle best: 2 / random avg: 0.3 / full exhaustive: 2
+
+[frame_multi] seen (trained on)
+  trained agent: 3 / oracle best: 3 / random avg: 0.7 / full exhaustive: 3
+
+[frame_multi_bright] seen (trained on)
+  trained agent: 3 / oracle best: 3 / random avg: 0.8 / full exhaustive: 3
+
+[frame_multi_dark] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_multi_flip] seen (trained on)
+  trained agent: 0 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_multi_rot] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent] seen (trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_single_tent_bright] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent_dark] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_single_tent_flip] seen (trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.1 / full exhaustive: 1
+
+[frame_single_tent_rot] seen (trained on)
+  trained agent: 0 / oracle best: 0 / random avg: 0.0 / full exhaustive: 0
+
+[frame_tent_closeup] HELD OUT (never trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.3 / full exhaustive: 2
+
+[frame_tent_closeup_bright] HELD OUT (never trained on)
+  trained agent: 1 / oracle best: 1 / random avg: 0.2 / full exhaustive: 1
+
+[frame_tent_closeup_dark] HELD OUT (never trained on)
+  trained agent: 2 / oracle best: 2 / random avg: 0.4 / full exhaustive: 2
+
+[frame_tent_closeup_flip] HELD OUT (never trained on)
+  trained agent: 2 / oracle best: 3 / random avg: 0.5 / full exhaustive: 3
+
+[frame_tent_closeup_rot] HELD OUT (never trained on)
+  trained agent: 1 / oracle best: 2 / random avg: 0.3 / full exhaustive: 2
+
+Saved generalization comparison to results/rl_generalization_loso_anomaly_frame_tent_closeup.csv

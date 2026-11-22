@@ -122,16 +122,78 @@ synthetic variety raised the average from "0, can't tell" to "47%, real but
 inconsistent"; it didn't fix the underlying feature problem, which still
 needs CNN-based tile features (next-step #2 below) to close the gap.
 
+### Real generalization test, take 3: anomaly features (color-agnostic by design)
+
+Raw color features have a specific flaw for SUAS: `mean_r/g/b` only means
+something if the agent has seen that exact color before in training, but we
+don't know what color the real competition tent will be. So instead of
+absolute color, each tile now gets a **relative** score: how different is
+this tile's color/texture from the *typical background of this same image*
+(median tile color/edge-density, so it's recomputed fresh per image, no
+color baked in from training). See `src/compute_anomaly_features.py`.
+
+**First check: is the anomaly score good enough to use on its own, no RL
+at all — just sort tiles by it and check the top few?** No.
+`src/anomaly_sort_baseline.py` does exactly that across all 20 frames and
+gets **15% of oracle-best, worse than random guessing (21%)**. The
+population-level signal is real (detected tiles average 32% higher
+color-anomaly than empty ones, 0.111 vs 0.084) but too noisy per-image to
+trust with a blind top-K sort — shadows and lighting gradients can look
+just as "anomalous" as a tent.
+
+**Second check: can the trained RL agent do better with this noisy signal
+than blind sorting can?** Reran the same leave-one-scene-out setup
+(`--feature-set anomaly`), same 4 independent held-out tests:
+
+| method | found (held-out totals) | oracle best | % of oracle |
+|---|---|---|---|
+| raw features + RL | 16 | 34 | 47% |
+| **anomaly features + RL** | **20** | **34** | **59%** |
+| anomaly features, no RL (just sort) | 5 | 34 | 15% |
+
+![Feature comparison](results/plots_real/feature_comparison.png)
+
+**Yes — training is doing real work here, not just the feature swap.** The
+same noisy anomaly score that scored 15% alone jumps to 59% once an agent
+learns to use it (combined with the edge-anomaly score and visited-tile
+context) instead of being blindly sorted. That answers the open question
+from the anomaly-detection discussion: RL isn't just redundant with a good
+feature, it's doing the job of filtering a bad-on-its-own signal into a
+usable one.
+
+**But it's still uneven, and still not a finished result:**
+
+| held-out scene | raw features + RL | anomaly features + RL | oracle best |
+|---|---|---|---|
+| frame_multi | 5 | 5 | 10 |
+| frame_mannequin_tent | 8 | 6 | 9 |
+| frame_single_tent | 1 | 1 | 5 |
+| frame_tent_closeup | 2 | **8** | 10 |
+
+Anomaly features helped a lot on `frame_tent_closeup` (2 → 8) and did
+nothing for `frame_single_tent` (stuck at 1/5 either way), and actually
+regressed slightly on `frame_mannequin_tent` (8 → 6). Net positive overall,
+not a universal fix — `frame_single_tent`'s near-zero score with *either*
+feature set suggests that specific scene's target may simply not stand out
+visually in a way color/edge-based features of any kind can catch, which
+would point toward needing the detector's own learned features (the
+confidence-score idea discussed next), not another color-based metric.
+
 ### What to tell the team tonight, honestly
 
 - The real model and real flight data both exist and both work — that's
   confirmed, not assumed
 - The RL mechanism works great in the "find 2 needles in 24 haystacks"
   setting real data actually looks like (perfect score, 8% of tiles)
-- It generalizes to unseen scenes *partially* — 47% of oracle-best vs.
-  random's 21%, averaged over 4 independent held-out tests — better than our
-  first look suggested, but inconsistent scene-to-scene, and we know why
-  (handcrafted features carry some signal but not enough)
+- It generalizes to unseen scenes *partially* — now 59% of oracle-best with
+  color-agnostic anomaly features + RL (up from 47% with raw color
+  features), vs. random's 21% — real improvement, not inconsistent noise:
+  we confirmed the RL training itself adds value, since the same feature
+  sorted blindly only gets 15%
+- Still not solved on every scene — one held-out scene stayed stuck near
+  random no matter which features we tried, which points at needing
+  features from the actual trained detector (next step), not just better
+  color/texture stats
 - The tiling-helps-accuracy story is weaker on real data than it looked on
   the placeholder data, because the real model is already good; the
   stronger pitch is still the speed/compute one
@@ -145,10 +207,19 @@ needs CNN-based tile features (next-step #2 below) to close the gap.
    pass over one field. Real frames from different flights/fields/lighting
    would be a stronger test than any amount of synthetic variety on the same
    source footage.
-2. **CNN tile features instead of handcrafted color/edge stats** — now a
-   confirmed requirement, not a guess: performance is well above random
-   (so there's *some* signal) but too inconsistent scene-to-scene to trust
-   (so the signal is too weak). A learned embedding should close that gap.
+2. **Detector-grounded tile features (a cheap low-res YOLO confidence pass
+   per tile) instead of any hand-built color/edge/anomaly stat.** The
+   anomaly-feature result above is a real improvement (47% → 59%) but it's
+   still fundamentally a color/texture heuristic, and `frame_single_tent`
+   stayed stuck near-random with every feature set we've tried so far —
+   suggesting the ceiling for *any* hand-built stat has been found. The
+   next real lever is to stop inventing features ourselves and borrow the
+   actual detector's own learned notion of "object-ness" (run a cheap/
+   low-resolution YOLO pass over every tile — much faster than a full-res
+   call — and use its confidence as the tile feature instead). This should
+   also be inherently more color-robust than our anomaly score, since it
+   comes from a model trained on real tent variety, not a hand-picked
+   statistic.
 3. **NMS merging across tile boundaries**, now with real duplicate evidence
    (the 512px/640px configs found 4 vs. full image's 3 — likely one
    duplicate, not a new target).
@@ -191,6 +262,18 @@ for base in frame_multi frame_mannequin_tent frame_single_tent frame_tent_closeu
 done
 python src/aggregate_loso.py
 python src/plot_loso.py
+
+# generalization: anomaly features (color-agnostic) + RL-vs-no-RL comparison
+python src/compute_anomaly_features.py --in results/tile_oracle_multi_real.csv \
+    --out results/tile_oracle_multi_real_anomaly.csv
+python src/anomaly_sort_baseline.py --oracle results/tile_oracle_multi_real_anomaly.csv --budget 5
+for base in frame_multi frame_mannequin_tent frame_single_tent frame_tent_closeup; do
+    python src/train_rl_generalization.py --oracle results/tile_oracle_multi_real_anomaly.csv \
+        --held-out-base $base --feature-set anomaly --budget 5 --episodes 500 \
+        --out results/rl_generalization_loso_anomaly_${base}.csv
+done
+python src/compare_feature_sets.py
+python src/plot_feature_comparison.py
 ```
 
 ---

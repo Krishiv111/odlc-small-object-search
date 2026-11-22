@@ -18,16 +18,21 @@ import random
 
 import pandas as pd
 
-FEATURE_COLS = ["mean_r", "mean_g", "mean_b", "edge_density"]
+RAW_FEATURE_COLS = ["mean_r", "mean_g", "mean_b", "edge_density"]
+ANOMALY_FEATURE_COLS = ["color_anomaly", "edge_anomaly"]
+
+# Kept for backwards compatibility with any code importing FEATURE_COLS directly.
+FEATURE_COLS = RAW_FEATURE_COLS
 
 
 class MultiTileSearchEnv:
-    def __init__(self, oracle_csv: str, budget: int = 5):
+    def __init__(self, oracle_csv: str, budget: int = 5, feature_cols: list[str] | None = None):
         self.oracle = pd.read_csv(oracle_csv)
         self.image_ids = sorted(self.oracle["image_id"].unique())
         self.num_tiles = self.oracle["tile_id"].nunique()
         self.budget = budget
-        self.state_dim = self.num_tiles * (1 + len(FEATURE_COLS))
+        self.feature_cols = feature_cols or RAW_FEATURE_COLS
+        self.state_dim = self.num_tiles * (1 + len(self.feature_cols))
         self.action_dim = self.num_tiles
         self.current_image = None
         self.current_df = None
@@ -38,7 +43,7 @@ class MultiTileSearchEnv:
         for tile_id in range(self.num_tiles):
             row = self.current_df[self.current_df.tile_id == tile_id].iloc[0]
             state.append(float(self.visited[tile_id]))
-            state.extend(float(row[c]) for c in FEATURE_COLS)
+            state.extend(float(row[c]) for c in self.feature_cols)
         return state
 
     def reset(self, image_id: str | None = None, train_image_ids: list | None = None):

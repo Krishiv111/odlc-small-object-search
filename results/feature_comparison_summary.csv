@@ -1,0 +1,4 @@
+method,found,oracle_best,pct_of_oracle
+raw features + RL,16.0,34.0,47.05882352941177
+anomaly features + RL,20.0,34.0,58.8235294117647
+"anomaly features, no RL (just sort)",5.0,34.0,14.705882352941176

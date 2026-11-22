@@ -1,0 +1,21 @@
+image_id,status,trained_agent,random_avg,oracle_best,full_exhaustive
+frame_mannequin_tent,seen (trained on),2.0,0.36,2.0,2.0
+frame_mannequin_tent_bright,seen (trained on),3.0,0.58,3.0,3.0
+frame_mannequin_tent_dark,seen (trained on),1.0,0.14,1.0,1.0
+frame_mannequin_tent_flip,seen (trained on),1.0,0.18,1.0,1.0
+frame_mannequin_tent_rot,seen (trained on),2.0,0.34,2.0,2.0
+frame_multi,HELD OUT (never trained on),2.0,0.48,3.0,3.0
+frame_multi_bright,HELD OUT (never trained on),2.0,0.36,3.0,3.0
+frame_multi_dark,HELD OUT (never trained on),1.0,0.44,2.0,2.0
+frame_multi_flip,HELD OUT (never trained on),0.0,0.16,1.0,1.0
+frame_multi_rot,HELD OUT (never trained on),0.0,0.2,1.0,1.0
+frame_single_tent,seen (trained on),1.0,0.32,2.0,2.0
+frame_single_tent_bright,seen (trained on),1.0,0.22,1.0,1.0
+frame_single_tent_dark,seen (trained on),1.0,0.18,1.0,1.0
+frame_single_tent_flip,seen (trained on),1.0,0.26,1.0,1.0
+frame_single_tent_rot,seen (trained on),0.0,0.0,0.0,0.0
+frame_tent_closeup,seen (trained on),2.0,0.2,2.0,2.0
+frame_tent_closeup_bright,seen (trained on),1.0,0.24,1.0,1.0
+frame_tent_closeup_dark,seen (trained on),2.0,0.32,2.0,2.0
+frame_tent_closeup_flip,seen (trained on),2.0,0.64,3.0,3.0
+frame_tent_closeup_rot,seen (trained on),2.0,0.42,2.0,2.0
